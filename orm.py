@@ -19,16 +19,15 @@ def log(sql, args=()):
     logging.info('SQL: %s' % sql)
 
 
-@asyncio.coroutine
-def create_pool(loop, **kwargs):
+async def create_pool(loop, **kwargs):
     logging.info('create database connection pool...')
     global __pool
-    __pool = yield from aiomysql.create_pool(
-        host=kwargs.get('host', 'localhost'),
+    __pool = await aiomysql.create_pool(
+        host=kwargs.get('host', '127.0.0.1'),
         port=kwargs.get('port', 3306),
-        user=kwargs.get('user'),
-        password=kwargs.get('password'),
-        db=kwargs.get('db'),
+        user=kwargs['user'],
+        password=kwargs['password'],
+        db=kwargs['db'],
         charset=kwargs.get('charset', 'utf8'),
         autocommit=kwargs.get('autocommit', True),
         maxsize=kwargs.get('maxsize', 10),
@@ -37,22 +36,21 @@ def create_pool(loop, **kwargs):
     )
 
 
-@asyncio.coroutine
-def select(sql, args, size=None):
+async def select(sql, args, size=None):
     log(sql, args)
     global __pool
-    async with conn.cursor(aiomysql.DictCursor) as cur:
-        await cur.execute(sql.replace('?', '%s'), args or ())
-        if size:
-            rs = await cur.fetchmany(size)
-        else:
-            rs = await cur.fetchall()
-        logging.info('Rows returned: %s' % len(rs))
+    async with __pool.get() as conn:
+        async with conn.cursor(aiomysql.DictCursor) as cur:
+            await cur.execute(sql.replace('?', '%s'), args or ())
+            if size:
+                rs = await cur.fetchmany(size)
+            else:
+                rs = await cur.fetchall()
+        logging.info('rows returned: %s' % len(rs))
         return rs
 
 
-@asyncio.coroutine
-def execute(sql, args, autocommit=True):
+async def execute(sql, args, autocommit=True):
     log(sql)
     async with __pool.get() as conn:
         if not autocommit:
@@ -85,7 +83,7 @@ class Field(object):
         self.default = default
 
     def __str__(self):
-        return '<%s, %s:%s>' % (self.__class__.__name__, self.column_type, self.naem)
+        return '<%s, %s:%s>' % (self.__class__.__name__, self.column_type, self.name)
 
 
 class StringField(Field):
@@ -243,7 +241,3 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = await execute(self.__delete__, args)
         if rows != 1:
             logging.warn('failed to remove by primary key: affected rows: %s' % rows)
-
-
-
-
