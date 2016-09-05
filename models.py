@@ -6,7 +6,7 @@
 @author: ttlttl
 @contact: wangmingape@gmail.com
 @site: https://github.com/ttlttl
-@file: models.py.py
+@file: models.py
 @time: 9/2/2016 2:53 PM
 """
 

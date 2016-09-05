@@ -6,7 +6,7 @@
 @author: ttlttl
 @contact: wangmingape@gmail.com
 @site: https://github.com/ttlttl
-@file: test.py.py
+@file: test.py
 @time: 9/2/2016 3:17 PM
 """
 
@@ -18,7 +18,7 @@ import sys
 
 
 async def test(loop):
-    await orm.create_pool(loop=loop, host='192.168.111.10', user='aiowebapp', password='aiowebapp', db='aiowebapp')
+    await orm.create_pool(loop=loop, host='127.0.0.1', user='aiowebapp', password='aiowebapp', db='aiowebapp')
     u = User(name='Test', email='test@example.com', passwd='1234567890', image='#')
     await u.save()
 
