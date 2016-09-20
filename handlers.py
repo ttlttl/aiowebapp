@@ -18,5 +18,14 @@ from models import User, Comment, Blog, default_id
 
 @get('/')
 async def index(request):
-    users = await User.findAll()
-    return {'__template__': 'test.html', 'users': users}
+    summary = 'hello world, good good study'
+    blogs = [
+        Blog(id='1', name="Test1", summary=summary, created_at=time.time() - 120),
+        Blog(id='2', name="Test2", summary=summary, created_at=time.time() - 1200),
+        Blog(id='3', name="Test3", summary=summary, created_at=time.time() - 2400),
+        Blog(id='4', name="Test4", summary=summary, created_at=time.time() - 3600),
+    ]
+    return {
+        '__template__' : 'blogs.html',
+        'blogs' : blogs
+    }
