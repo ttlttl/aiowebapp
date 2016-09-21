@@ -58,6 +58,7 @@ def get_named_kw_args(fn):
     return tuple(args)
 
 
+#使用inspect模块检查函数参数类型
 def has_named_kw_args(fn):
     params = inspect.signature(fn).parameters
     for name, param in params.items():
@@ -88,6 +89,7 @@ def has_request_arg(fn):
     return found
 
 
+#从URL函数中分析需要接收的参数，从request中获取必要的参数，然后调用URL函数
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -169,6 +171,7 @@ def add_route(app, fn):
     app.router.add_route(method, path, RequestHandler(app, fn))
 
 
+#从模块中搜索路由函数，添加路由
 def add_routes(app, module_name):
     n = module_name.rfind('.')
     if n == (-1):
